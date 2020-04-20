@@ -11,7 +11,7 @@ import java.nio.charset.CodingErrorAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import java.nio.Buffer;
 /**
  * Based on the decode-methods from the URI Class,
  * just that they do not decode the reserved characters
