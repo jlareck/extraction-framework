@@ -48,8 +48,11 @@ extends WikiPageExtractor
 
     if (finalExtractors.isEmpty)
       Seq.empty
-    else
-      new CompositeExtractor[WikiPage](immutableExtractors :_*).extract(input, subjectUri)
+    else{
+        val extractedValue =  new CompositeExtractor[WikiPage](immutableExtractors :_*).extract(input, subjectUri)
+        extractedValue
+    }
+
   }
 }
 
