@@ -2,10 +2,12 @@ package org.dbpedia.extraction.wikiparser.impl.json
 
 import java.nio.channels.NonReadableChannelException
 
-import com.fasterxml.jackson.databind.{JsonMappingException, DeserializationFeature, ObjectMapper}
+import com.fasterxml.jackson.databind.{DeserializationFeature, JsonMappingException, ObjectMapper}
 import org.dbpedia.extraction.util.WikidataUtil
-import org.dbpedia.extraction.wikiparser.{WikiPage, JsonNode, Namespace}
-import org.wikidata.wdtk.datamodel.json.jackson.{JacksonTermedStatementDocument, JacksonPropertyDocument, JacksonItemDocument}
+import org.dbpedia.extraction.wikiparser.{JsonNode, Namespace, WikiPage}
+import org.wikidata.wdtk.datamodel.helpers.{DatamodelMapper, JsonDeserializer}
+import org.wikidata.wdtk.datamodel.implementation.EntityDocumentImpl
+//import org.wikidata.wdtk.datamodel.json.jackson.{JacksonItemDocument, JacksonPropertyDocument, JacksonTermedStatementDocument}
 
 import scala.util.matching.Regex
 
@@ -52,9 +54,9 @@ class JsonWikiParser {
   }
 
   private def getJacksonDocument(page: WikiPage, jsonString: String): Option[JsonNode] = {
-    val mapper = new ObjectMapper()
-    val jacksonDocument = mapper.readValue(jsonString, classOf[JacksonTermedStatementDocument])
-    jacksonDocument.setSiteIri(WikidataUtil.wikidataDBpNamespace)
+    //val mapper = new DatamodelMapper(WikidataUtil.wikidataDBpNamespace)
+    val jacksonDocument = new JsonDeserializer(WikidataUtil.wikidataDBpNamespace)
+
     Some(new JsonNode(page, jacksonDocument))
   }
 

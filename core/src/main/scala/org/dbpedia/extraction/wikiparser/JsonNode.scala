@@ -1,6 +1,7 @@
 package org.dbpedia.extraction.wikiparser
 
-import org.wikidata.wdtk.datamodel.json.jackson.JacksonTermedStatementDocument
+import org.wikidata.wdtk.datamodel.helpers.JsonDeserializer
+//import org.wikidata.wdtk.datamodel.json.jackson.JacksonTermedStatementDocument
 
 /**
  * @param wikiPage wikidata json page
@@ -9,7 +10,7 @@ import org.wikidata.wdtk.datamodel.json.jackson.JacksonTermedStatementDocument
 
 class JsonNode  (
                   val wikiPage : WikiPage,
-                  val wikiDataDocument : JacksonTermedStatementDocument
+                  val wikiDataDocument : JsonDeserializer
                   )
   extends Node(List.empty, 0) {
   def toPlainText: String = ""
