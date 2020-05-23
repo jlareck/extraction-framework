@@ -32,8 +32,12 @@ class WikidataLexemeExtractor(
     val quads = new ArrayBuffer[Quad]()
 
     val subject = WikidataUtil.getWikidataNamespace(subjectUri).replace("Lexeme:", "")
+    if(page.wikiPage.title.namespace.code == 146){
+      quads ++= getLexicalCategory(page, subject)
+    }
 
-    quads ++= getLexicalCategory(page, subject)
+
+
     //    quads ++= getDescriptions(page, subject)
     //    quads ++= getLabels(page, subject)
     //    quads ++= getStatements(page, subject)

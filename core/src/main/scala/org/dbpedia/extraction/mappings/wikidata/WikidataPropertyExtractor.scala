@@ -49,11 +49,16 @@ class WikidataPropertyExtractor(
     val quads = new ArrayBuffer[Quad]()
 
     val subject = WikidataUtil.getWikidataNamespace(subjectUri).replace("Property:", "")
+    if(page.wikiPage.title.namespace.code == 120){
+      quads ++= getAliases(page, subject)
+      quads ++= getDescriptions(page, subject)
 
-    quads ++= getAliases(page, subject)
-    quads ++= getDescriptions(page, subject)
-    quads ++= getLabels(page, subject)
-    quads ++= getStatements(page, subject)
+      quads ++= getLabels(page, subject)
+
+      quads ++= getStatements(page, subject)
+    }
+
+
 
     quads
   }
