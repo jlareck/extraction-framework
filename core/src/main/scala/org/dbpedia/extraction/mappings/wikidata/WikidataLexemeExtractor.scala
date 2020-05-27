@@ -1,11 +1,11 @@
 package org.dbpedia.extraction.mappings
 
-
 import org.dbpedia.extraction.config.provenance.DBpediaDatasets
+import org.dbpedia.extraction.mappings.JsonNodeExtractor
 import org.dbpedia.extraction.ontology.Ontology
 import org.dbpedia.extraction.transform.Quad
 import org.dbpedia.extraction.util.{Language, WikidataUtil}
-import org.dbpedia.extraction.wikiparser.{Namespace, JsonNode}
+import org.dbpedia.extraction.wikiparser.{JsonNode, Namespace}
 import org.wikidata.wdtk.datamodel.interfaces._
 
 import scala.collection.JavaConversions._
@@ -53,8 +53,6 @@ class WikidataLexemeExtractor(
 
   private def getLexicalCategory(document: JsonNode, subjectUri: String): Seq[Quad] = {
     val quads = new ArrayBuffer[Quad]()
-
-
 
     if (document.wikiPage.title.namespace == Namespace.WikidataLexeme) {
       val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
@@ -127,7 +125,7 @@ class WikidataLexemeExtractor(
             claim.getMainSnak match {
               case mainSnak: ValueSnak => {
                 val v = mainSnak.getValue
-                val value = WikidataUtil.getValue(v)
+                val value = WikidataUtil.getValue(v).split(" ")(0)
                 val datatype = if (WikidataUtil.getDatatype(v) != null) context.ontology.datatypes(WikidataUtil.getDatatype(v)) else null
                 quads += new Quad(context.language, DBpediaDatasets.WikidataLexeme, subjectUri, lexeme, value, document.wikiPage.sourceIri, datatype)
               }
@@ -147,6 +145,7 @@ class WikidataLexemeExtractor(
     if (document.wikiPage.title.namespace == Namespace.WikidataLexeme) {
       val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
       for (sense <- page.getSenses){
+        val senseId = sense.getEntityId.toString.split(" ",2)(0)
         for (statementGroup <- sense.getStatementGroups) {
           statementGroup.foreach {
             statement => {
@@ -156,9 +155,9 @@ class WikidataLexemeExtractor(
               claim.getMainSnak match {
                 case mainSnak: ValueSnak => {
                   val v = mainSnak.getValue
-                  val value = WikidataUtil.getValue(v)
+                  val value = WikidataUtil.getValue(v).split(" ")(0)
                   val datatype = if (WikidataUtil.getDatatype(v) != null) context.ontology.datatypes(WikidataUtil.getDatatype(v)) else null
-                  quads += new Quad(context.language, DBpediaDatasets.WikidataLexeme, sense.getEntityId.toString, lexeme, value, document.wikiPage.sourceIri, datatype)
+                  quads += new Quad(context.language, DBpediaDatasets.WikidataLexeme, senseId, lexeme, value, document.wikiPage.sourceIri, datatype)
                 }
                 case _ =>
               }
@@ -169,7 +168,7 @@ class WikidataLexemeExtractor(
           val lemmas = WikidataUtil.replacePunctuation(value.toString, lang)
           Language.get(lang) match {
             case Some(dbpedia_lang) => {
-              quads += new Quad(dbpedia_lang, DBpediaDatasets.WikidataLexeme, sense.getEntityId.toString, labelProperty, lemmas,
+              quads += new Quad(dbpedia_lang, DBpediaDatasets.WikidataLexeme, senseId, labelProperty, lemmas,
                 document.wikiPage.sourceIri, context.ontology.datatypes("rdf:langString"))
             }
             case _ =>
@@ -188,6 +187,7 @@ class WikidataLexemeExtractor(
     if (document.wikiPage.title.namespace == Namespace.WikidataLexeme) {
       val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
       for (form <- page.getForms){
+        val formId = form.getEntityId.toString.split(" ",2)(0)
         for (statementGroup <- form.getStatementGroups) {
           statementGroup.foreach {
             statement => {
@@ -197,9 +197,10 @@ class WikidataLexemeExtractor(
               claim.getMainSnak match {
                 case mainSnak: ValueSnak => {
                   val v = mainSnak.getValue
-                  val value = WikidataUtil.getValue(v)
+                  val value = WikidataUtil.getValue(v).split(" ")(0)
+
                   val datatype = if (WikidataUtil.getDatatype(v) != null) context.ontology.datatypes(WikidataUtil.getDatatype(v)) else null
-                  quads += new Quad(context.language, DBpediaDatasets.WikidataLexeme, form.getEntityId.toString, lexeme, value, document.wikiPage.sourceIri, datatype)
+                  quads += new Quad(context.language, DBpediaDatasets.WikidataLexeme, formId, lexeme, value, document.wikiPage.sourceIri, datatype)
                 }
                 case _ =>
               }
@@ -210,7 +211,7 @@ class WikidataLexemeExtractor(
           val lemmas = WikidataUtil.replacePunctuation(value.toString, lang)
           Language.get(lang) match {
             case Some(dbpedia_lang) => {
-              quads += new Quad(dbpedia_lang, DBpediaDatasets.WikidataLexeme, form.getEntityId.toString, labelProperty, lemmas,
+              quads += new Quad(dbpedia_lang, DBpediaDatasets.WikidataLexeme, formId, labelProperty, lemmas,
                 document.wikiPage.sourceIri, context.ontology.datatypes("rdf:langString"))
             }
             case _ =>
@@ -220,7 +221,7 @@ class WikidataLexemeExtractor(
           grammaticalFeature match{
             case value: Value =>{
               val objectValue = WikidataUtil.getValue(value)
-              quads += new Quad(context.language, DBpediaDatasets.WikidataLexeme, form.getEntityId.toString, grammaticalFeatureProperty, objectValue,
+              quads += new Quad(context.language, DBpediaDatasets.WikidataLexeme, formId, grammaticalFeatureProperty, objectValue,
                 document.wikiPage.sourceIri, null)
             }
             case _ =>
