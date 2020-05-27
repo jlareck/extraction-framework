@@ -49,15 +49,11 @@ class WikidataPropertyExtractor(
     val quads = new ArrayBuffer[Quad]()
 
     val subject = WikidataUtil.getWikidataNamespace(subjectUri).replace("Property:", "")
-    if(page.wikiPage.title.namespace.code == 120){
-      quads ++= getAliases(page, subject)
-      quads ++= getDescriptions(page, subject)
 
-      quads ++= getLabels(page, subject)
-
-      quads ++= getStatements(page, subject)
-    }
-
+    quads ++= getAliases(page, subject)
+    quads ++= getDescriptions(page, subject)
+    quads ++= getLabels(page, subject)
+    quads ++= getStatements(page, subject)
 
 
     quads
@@ -66,8 +62,9 @@ class WikidataPropertyExtractor(
 
   private def getAliases(document: JsonNode, subjectUri: String): Seq[Quad] = {
     val quads = new ArrayBuffer[Quad]()
-    val page = document.wikiDataDocument.deserializePropertyDocument(document.wikiPage.source)
+
     if (document.wikiPage.title.namespace == Namespace.WikidataProperty) {
+      val page = document.wikiDataDocument.deserializePropertyDocument(document.wikiPage.source)
       for ((lang, value) <- page.getAliases) {
         val alias = WikidataUtil.replacePunctuation(value.toString, lang)
         Language.get(lang) match {
@@ -84,8 +81,8 @@ class WikidataPropertyExtractor(
 
   private def getDescriptions(document: JsonNode, subjectUri: String): Seq[Quad] = {
     val quads = new ArrayBuffer[Quad]()
-    val page = document.wikiDataDocument.deserializePropertyDocument(document.wikiPage.source)
     if (document.wikiPage.title.namespace == Namespace.WikidataProperty) {
+      val page = document.wikiDataDocument.deserializePropertyDocument(document.wikiPage.source)
       for ((lang, value) <- page.getDescriptions) {
         val description = WikidataUtil.replacePunctuation(value.toString, lang)
         Language.get(lang) match {
@@ -102,8 +99,8 @@ class WikidataPropertyExtractor(
 
   private def getLabels(document: JsonNode, subjectUri: String): Seq[Quad] = {
     val quads = new ArrayBuffer[Quad]()
-    val page = document.wikiDataDocument.deserializePropertyDocument(document.wikiPage.source)
     if (document.wikiPage.title.namespace == Namespace.WikidataProperty) {
+      val page = document.wikiDataDocument.deserializePropertyDocument(document.wikiPage.source)
       for ((lang, value) <- page.getLabels) {
         val literalWithoutLang = WikidataUtil.replacePunctuation(value.toString, lang)
         Language.get(lang) match {
@@ -121,8 +118,9 @@ class WikidataPropertyExtractor(
 
   private def getStatements(document: JsonNode, subjectUri: String): Seq[Quad] = {
     val quads = new ArrayBuffer[Quad]()
-    val page = document.wikiDataDocument.deserializePropertyDocument(document.wikiPage.source)
+
     if (document.wikiPage.title.namespace == Namespace.WikidataProperty) {
+      val page = document.wikiDataDocument.deserializePropertyDocument(document.wikiPage.source)
       for (statementGroup <- page.getStatementGroups) {
         statementGroup.foreach {
           statement => {

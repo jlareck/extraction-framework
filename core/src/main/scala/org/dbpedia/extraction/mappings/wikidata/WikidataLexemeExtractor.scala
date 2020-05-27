@@ -38,14 +38,14 @@ class WikidataLexemeExtractor(
     val subject = WikidataUtil.getWikidataNamespace(subjectUri).replace("Lexeme:", "")
 
     //checks if extractor is used for correct entity
-    if(page.wikiPage.title.namespace.code == 146){
-      quads ++= getLexicalCategory(page, subject)
-      quads ++= getLemmas(page, subject)
-      quads ++= getLanguage(page, subject)
-      quads ++= getStatements(page, subject)
-      quads ++= getSenses(page, subject)
-      quads ++= getForms(page, subject)
-    }
+
+    quads ++= getLexicalCategory(page, subject)
+    quads ++= getLemmas(page, subject)
+    quads ++= getLanguage(page, subject)
+    quads ++= getStatements(page, subject)
+    quads ++= getSenses(page, subject)
+    quads ++= getForms(page, subject)
+
 
     quads
   }
@@ -54,10 +54,10 @@ class WikidataLexemeExtractor(
   private def getLexicalCategory(document: JsonNode, subjectUri: String): Seq[Quad] = {
     val quads = new ArrayBuffer[Quad]()
 
-    val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
+
 
     if (document.wikiPage.title.namespace == Namespace.WikidataLexeme) {
-
+      val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
       page.getLexicalCategory match {
         case value: Value =>{
           val objectValue = WikidataUtil.getValue(value)
@@ -75,8 +75,9 @@ class WikidataLexemeExtractor(
 
   private def getLemmas(document: JsonNode, subjectUri: String): Seq[Quad] = {
     val quads = new ArrayBuffer[Quad]()
-    val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
+
     if (document.wikiPage.title.namespace == Namespace.WikidataLexeme) {
+      val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
       for ((lang, value) <- page.getLemmas) {
         val lemmas = WikidataUtil.replacePunctuation(value.toString, lang)
         Language.get(lang) match {
@@ -94,10 +95,10 @@ class WikidataLexemeExtractor(
   private def getLanguage(document: JsonNode, subjectUri: String): Seq[Quad] = {
     val quads = new ArrayBuffer[Quad]()
 
-    val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
+
 
     if (document.wikiPage.title.namespace == Namespace.WikidataLexeme) {
-
+      val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
       page.getLanguage match {
         case value: Value =>{
           val objectValue = WikidataUtil.getValue(value)
@@ -114,8 +115,9 @@ class WikidataLexemeExtractor(
   }
   private def getStatements(document: JsonNode, subjectUri: String): Seq[Quad] = {
     val quads = new ArrayBuffer[Quad]()
-    val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
+
     if (document.wikiPage.title.namespace == Namespace.WikidataLexeme) {
+      val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
       for (statementGroup <- page.getStatementGroups) {
         statementGroup.foreach {
           statement => {
@@ -141,8 +143,9 @@ class WikidataLexemeExtractor(
   //write senses
   private def getSenses(document: JsonNode, subjectUri: String): Seq[Quad] = {
     val quads = new ArrayBuffer[Quad]()
-    val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
+
     if (document.wikiPage.title.namespace == Namespace.WikidataLexeme) {
+      val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
       for (sense <- page.getSenses){
         for (statementGroup <- sense.getStatementGroups) {
           statementGroup.foreach {
@@ -181,8 +184,9 @@ class WikidataLexemeExtractor(
   }
   private def getForms(document: JsonNode, subjectUri: String): Seq[Quad] = {
     val quads = new ArrayBuffer[Quad]()
-    val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
+
     if (document.wikiPage.title.namespace == Namespace.WikidataLexeme) {
+      val page = document.wikiDataDocument.deserializeLexemeDocument(document.wikiPage.source)
       for (form <- page.getForms){
         for (statementGroup <- form.getStatementGroups) {
           statementGroup.foreach {
