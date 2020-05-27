@@ -45,11 +45,12 @@ class WikidataRawExtractor(
 
   override val datasets = Set(DBpediaDatasets.WikidataRaw, DBpediaDatasets.WikidataRawReified, DBpediaDatasets.WikidataRawReifiedQualifiers)
 
-  override def extract(document: JsonNode, subjectUri: String): Seq[Quad] = {
+  override def extract(page: JsonNode, subjectUri: String): Seq[Quad] = {
     val quads = new ArrayBuffer[Quad]()
-    val page = document.wikiDataDocument.deserializeItemDocument(document.wikiPage.source)
-    if (document.wikiPage.title.namespace != Namespace.WikidataProperty) {
-      for ((statementGroup) <- page.getStatementGroups) {
+
+    if (page.wikiPage.title.namespace != Namespace.WikidataProperty && page.wikiPage.title.namespace != Namespace.WikidataLexeme) {
+      val document = page.wikiDataDocument.deserializeItemDocument(page.wikiPage.source)
+      for (statementGroup <- document.getStatementGroups) {
         statementGroup.getStatements.foreach {
           statement => {
             val claim = statement.getClaim
@@ -66,17 +67,17 @@ class WikidataRawExtractor(
 
                 //Wikidata raw extractor without reification
                 val valuei = WikidataUtil.getValue(value)
-                quads += new Quad(context.language, DBpediaDatasets.WikidataRaw, subjectUri, property, valuei, document.wikiPage.sourceIri, datatype)
+                quads += new Quad(context.language, DBpediaDatasets.WikidataRaw, subjectUri, property, valuei, page.wikiPage.sourceIri, datatype)
 
                 //unique statementUri created for reification. Same statementUri is used for reification mapping
                 val statementUri = WikidataUtil.getStatementUri(subjectUri, propertyId, value)
 
                 //Wikidata raw extractor with reification
-                quads += new Quad(context.language, DBpediaDatasets.WikidataRawReified, statementUri, rdfType, rdfStatement, document.wikiPage.sourceIri)
-                quads += new Quad(context.language, DBpediaDatasets.WikidataRawReified, statementUri, rdfSubject, subjectUri, document.wikiPage.sourceIri, null)
-                quads += new Quad(context.language, DBpediaDatasets.WikidataRawReified, statementUri, rdfPredicate, property, document.wikiPage.sourceIri, null)
-                quads += new Quad(context.language, DBpediaDatasets.WikidataRawReified, statementUri, rdfObject, valuei, document.wikiPage.sourceIri, datatype)
-                quads ++= getQualifiersQuad(document, statementUri, claim)
+                quads += new Quad(context.language, DBpediaDatasets.WikidataRawReified, statementUri, rdfType, rdfStatement, page.wikiPage.sourceIri)
+                quads += new Quad(context.language, DBpediaDatasets.WikidataRawReified, statementUri, rdfSubject, subjectUri, page.wikiPage.sourceIri, null)
+                quads += new Quad(context.language, DBpediaDatasets.WikidataRawReified, statementUri, rdfPredicate, property, page.wikiPage.sourceIri, null)
+                quads += new Quad(context.language, DBpediaDatasets.WikidataRawReified, statementUri, rdfObject, valuei, page.wikiPage.sourceIri, datatype)
+                quads ++= getQualifiersQuad(page, statementUri, claim)
               }
               case _ =>
 
