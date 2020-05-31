@@ -9,17 +9,20 @@ import org.dbpedia.extraction.config.provenance.{DBpediaDatasets, Dataset}
 import org.dbpedia.extraction.config.{Config, ConfigUtils}
 import org.dbpedia.extraction.destinations._
 import org.dbpedia.extraction.mappings._
+
 import org.dbpedia.extraction.ontology.Ontology
 import org.dbpedia.extraction.ontology.io.OntologyReader
 import org.dbpedia.extraction.sources.{Source, WikiSource, XMLSource}
 import org.dbpedia.extraction.util.RichFile.wrapFile
 import org.dbpedia.extraction.util._
+import org.dbpedia.extraction.wikiparser.Namespace._
 import org.dbpedia.extraction.wikiparser._
 
 import scala.collection.convert.decorateAsScala._
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.reflect._
+
 
 /**
  * Loads the dump extraction configuration.
