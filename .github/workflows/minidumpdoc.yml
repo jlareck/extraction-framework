@@ -23,5 +23,5 @@ jobs:
 
       - name: Add generated TSV stats
         uses: EndBug/add-and-commit@v4.4.0
-          with:
-            add: 'src/test/resources/shaclTestsCoverageTable.md --force'
+        with:
+          add: 'src/test/resources/shaclTestsCoverageTable.md --force'
