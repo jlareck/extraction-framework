@@ -1,0 +1,27 @@
+name: Minidump document creation
+
+on:
+  push:
+    branches: [ minidumpdoc ]
+  pull_request:
+    branches: [ minidumpdoc ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+           java-version: 1.8
+      - name: Run MinidumpDoc
+        working-directory: ./dump
+        run: mvn package exec:java -Dexec -Dexec.mainClass=org.dbpedia.extraction.dump.util.MinidumpDoc
+
+      - name: Add generated TSV stats
+        uses: EndBug/add-and-commit@v4.4.0
+          with:
+          add: 'src/test/resources/shaclTestsCoverageTable.md --force'
