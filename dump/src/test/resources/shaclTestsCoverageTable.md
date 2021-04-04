@@ -199,5 +199,3 @@ wikipage-uri|shacl-test|issue|comment
 [http://wikidata.dbpedia.org/resource/Q75197918](http://dief.tools.dbpedia.org/server/extraction/wikidata/extract?title=Q75197918&revid=&format=trix&extractors=custom) | 
 [http://wikidata.dbpedia.org/resource/Q75204534](http://dief.tools.dbpedia.org/server/extraction/wikidata/extract?title=Q75204534&revid=&format=trix&extractors=custom) | http://www.w3.org/2003/01/geo/wgs84_pos#long #wgs84_lat_long |  | generic test for range of wgs84 lat/long | 
 [http://yi.dbpedia.org/resource/בערלין](http://dief.tools.dbpedia.org/server/extraction/yi/extract?title=בערלין&revid=&format=trix&extractors=custom) | 
-[http://yo.dbpedia.org/resource/Berlin](http://dief.tools.dbpedia.org/server/extraction/yo/extract?title=Berlin&revid=&format=trix&extractors=custom) | 
-[http://zh.dbpedia.org/resource/柏林](http://dief.tools.dbpedia.org/server/extraction/zh/extract?title=柏林&revid=&format=trix&extractors=custom) | 
