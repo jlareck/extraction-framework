@@ -17,6 +17,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
            java-version: 1.8
+      - name: Run Maven install
+        run: mvn install
+
       - name: Run MinidumpDoc
         working-directory: ./dump
         run: mvn package exec:java -Dexec -Dexec.mainClass=org.dbpedia.extraction.dump.util.MinidumpDoc
