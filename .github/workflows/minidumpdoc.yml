@@ -22,10 +22,10 @@ jobs:
 
       - name: Run MinidumpDoc
         working-directory: ./dump
-        run: mvn package exec:java -Dexec -Dexec.mainClass=org.dbpedia.extraction.dump.util.MinidumpDoc
+        run: mvn package exec:java -Dexec.mainClass=org.dbpedia.extraction.dump.util.MinidumpDoc
 
       - name: Updating test coverage table
         uses: EndBug/add-and-commit@v4.4.0
         with:
-          message: 'Github action'
+          message: 'Update with Github action'
           add: 'dump/src/test/resources/shaclTestsCoverageTable.md --force'
