@@ -24,7 +24,8 @@ jobs:
         working-directory: ./dump
         run: mvn package exec:java -Dexec -Dexec.mainClass=org.dbpedia.extraction.dump.util.MinidumpDoc
 
-      - name: Add generated TSV stats
+      - name: Updating test coverage table
         uses: EndBug/add-and-commit@v4.4.0
         with:
-          add: 'src/test/resources/shaclTestsCoverageTable.md --force'
+          message: 'Github action'
+          add: 'dump/src/test/resources/shaclTestsCoverageTable.md --force'
