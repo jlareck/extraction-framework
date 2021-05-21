@@ -8,7 +8,9 @@ import org.dbpedia.extraction.config.Config
 import org.dbpedia.extraction.dump.TestConfig.{date, genericConfig, mappingsConfig, minidumpDir, nifAbstractConfig, sparkSession, wikidataConfig}
 import org.dbpedia.extraction.dump.extract.ConfigLoader
 import org.dbpedia.extraction.dump.tags.ExtractionTestTag
+import org.dbpedia.extraction.util.Counter
 import org.scalatest.{BeforeAndAfterAll, DoNotDiscover, FunSuite}
+import org.slf4j.LoggerFactory
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
@@ -16,7 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @DoNotDiscover
 class ExtractionTest extends FunSuite with BeforeAndAfterAll {
-
+  val logger = LoggerFactory.getLogger(classOf[ExtractionTest])
   override def beforeAll() {
     minidumpDir.listFiles().foreach(f => {
       val wikiMasque = f.getName + "wiki"
@@ -30,24 +32,25 @@ class ExtractionTest extends FunSuite with BeforeAndAfterAll {
     })
   }
 
-  test("extract generic datasets", ExtractionTestTag) {
-    val jobsRunning = new ConcurrentLinkedQueue[Future[Unit]]()
-    extract(genericConfig, jobsRunning)
-  }
-
-  test("extract mappings datasets", ExtractionTestTag) {
-    val jobsRunning = new ConcurrentLinkedQueue[Future[Unit]]()
-    extract(mappingsConfig, jobsRunning)
-  }
-
-  test("extract wikidata datasets", ExtractionTestTag) {
-    val jobsRunning = new ConcurrentLinkedQueue[Future[Unit]]()
-    extract(wikidataConfig, jobsRunning)
-  }
+//  test("extract generic datasets", ExtractionTestTag) {
+//    val jobsRunning = new ConcurrentLinkedQueue[Future[Unit]]()
+//    extract(genericConfig, jobsRunning)
+//  }
+//
+//  test("extract mappings datasets", ExtractionTestTag) {
+//    val jobsRunning = new ConcurrentLinkedQueue[Future[Unit]]()
+//    extract(mappingsConfig, jobsRunning)
+//  }
+//
+//  test("extract wikidata datasets", ExtractionTestTag) {
+//    val jobsRunning = new ConcurrentLinkedQueue[Future[Unit]]()
+//    extract(wikidataConfig, jobsRunning)
+//  }
 
   test("extract nifAbstract datasets", ExtractionTestTag) {
     val jobsRunning = new ConcurrentLinkedQueue[Future[Unit]]()
     extract(nifAbstractConfig, jobsRunning)
+    println("Average time for request: " + Counter.totalTime/Counter.counter)
   }
 
   def extractSpark(config: Config, jobsRunning: ConcurrentLinkedQueue[Future[Unit]]): Unit = {
@@ -73,6 +76,7 @@ class ExtractionTest extends FunSuite with BeforeAndAfterAll {
   }
 
   def extract(config: Config, jobsRunning: ConcurrentLinkedQueue[Future[Unit]]): Unit = {
+    val start = System.currentTimeMillis()
     val configLoader = new ConfigLoader(config)
     val parallelProcesses = if (config.runJobsInParallel) config.parallelProcesses else 1
 
@@ -96,5 +100,7 @@ class ExtractionTest extends FunSuite with BeforeAndAfterAll {
       Thread.sleep(1000)
     }
     jobsRunning.clear()
+    val end = System.currentTimeMillis()
+    println("Extraction time: " + (end - start))
   }
 }

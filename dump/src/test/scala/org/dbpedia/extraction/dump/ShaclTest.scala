@@ -55,13 +55,13 @@ class ShaclTest extends FunSuite with BeforeAndAfterAll {
   }
 
 
-  //  test("RDFUnit with ontology", ShaclTestTag) {
-  //    val (schema: SchemaSource, testSuite: TestSuite) = generateOntologyTestSuite
-  //    val results =
-  //      validateMinidumpWithTestSuite(schema, testSuite, TestCaseExecutionType.aggregatedTestCaseResult, "./target/testreports/onto-tests.html")
-  //
-  //    // TODO assert
-  //  }
+    test("RDFUnit with ontology", ShaclTestTag) {
+      val (schema: SchemaSource, testSuite: TestSuite) = generateOntologyTestSuite
+      val results =
+        validateMinidumpWithTestSuite(schema, testSuite, TestCaseExecutionType.aggregatedTestCaseResult, "./target/testreports/onto-tests.html")
+
+      // TODO assert
+    }
 
   def generateOntologyTestSuite: (SchemaSource, TestSuite) = {
     val dbpedia_ont: Model = ModelFactory.createDefaultModel()

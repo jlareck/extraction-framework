@@ -4,10 +4,11 @@ import java.io.{InputStream, OutputStreamWriter}
 import java.net.{HttpURLConnection, URL}
 import java.time.temporal.ChronoUnit
 
+
 import javax.xml.ws.WebServiceException
 import org.dbpedia.extraction.wikiparser.WikiTitle
 import org.dbpedia.util.text.html.{HtmlCoder, XmlCodes}
-
+import com.fasterxml.jackson.databind.ObjectMapper
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
 import org.dbpedia.extraction.config.Config.MediaWikiConnection
@@ -19,7 +20,7 @@ import org.slf4j.LoggerFactory
   */
 class MediaWikiConnector(connectionConfig: MediaWikiConnection, xmlPath: Seq[String]) {
 
-  protected val log = LoggerFactory.getLogger(classOf[MediaWikiConnector])
+  protected val logger = LoggerFactory.getLogger(classOf[MediaWikiConnector])
   //protected def apiUrl: URL = new URL(connectionConfig.apiUrl)
   //require(Try{apiUrl.openConnection().connect()} match {case Success(x)=> true case Failure(e) => false}, "can not connect to the apiUrl")
 
@@ -49,7 +50,7 @@ class MediaWikiConnector(connectionConfig: MediaWikiConnection, xmlPath: Seq[Str
     * @param pageTitle The encoded title of the page
     * @return The page as an Option
     */
-  def retrievePage(pageTitle : WikiTitle, apiParameterString: String, isRetry: Boolean = false) : Option[String] =
+  def retrievePage(pageTitle : WikiTitle, apiParameterString: String, isRetry: Boolean = false, isNif: Boolean = true) : Option[String] =
   {
     val retryFactor = if(isRetry) 2 else 1
 
@@ -67,13 +68,19 @@ class MediaWikiConnector(connectionConfig: MediaWikiConnection, xmlPath: Seq[Str
 
 
     // Fill parameters
-    var parameters = "uselang=" + pageTitle.language.wikiCode
+    var parameters = ""
 
-    parameters += (pageTitle.id match{
-      case Some(id) if apiParameterString.contains("%d") =>
-        apiParameterString.replace("&page=%s", "").format(id)
-      case _ => apiParameterString.replaceAll("&pageid=[^&]+", "").format(titleParam)
-    })
+    if (isNif) {
+      parameters += "uselang=" + pageTitle.language.wikiCode
+      parameters += (pageTitle.id match{
+        case Some(id) if apiParameterString.contains("%d") =>
+          apiParameterString.replace("&page=%s", "").format(id)
+        case _ => apiParameterString.replaceAll("&pageid=[^&]+", "").format(titleParam)
+      })
+    }
+    else {
+      parameters += apiParameterString.replace("%s", pageTitle.id.get.toString)
+    }
     //println(s"mediawikiurl: $apiUrl?$parameters")
 
     for(counter <- 1 to maxRetries)
@@ -96,9 +103,12 @@ class MediaWikiConnector(connectionConfig: MediaWikiConnection, xmlPath: Seq[Str
 
         val inputStream = conn.getInputStream
         val end = java.time.LocalTime.now()
+
         conn match {
           case connection: HttpURLConnection => {
-            log.debug("Request type: "+ connection.getRequestMethod + "; URL: " + connection.getURL +
+            Counter.counter += 1
+            Counter.totalTime += start.until(end, ChronoUnit.MILLIS).asInstanceOf[Int]
+            logger.debug("Request type: "+ connection.getRequestMethod + "; URL: " + connection.getURL +
               "; Parameters: " + parameters +"; HTTP code: "+ connection.getHeaderField(null) +
               "; Request time: "+start+"; Response time: " + end + "; Time needed: " +
               start.until(end, ChronoUnit.MILLIS))
@@ -106,10 +116,20 @@ class MediaWikiConnector(connectionConfig: MediaWikiConnection, xmlPath: Seq[Str
           case _ =>
         }
         // Read answer
-        return readInAbstract(inputStream) match{
-          case Success(str) => Option(str)
-          case Failure(e) => throw e
+        if (isNif) {
+          return readInAbstract(inputStream) match{
+            case Success(str) => Option(str)
+            case Failure(e) => throw e
+          }
         }
+        else {
+          val mapper = new ObjectMapper
+          val jsonMap = mapper.readTree(inputStream)
+
+          val wikipageAbstract = jsonMap.get("query").get("pages").get(pageTitle.id.get+"").get("extract").asText()
+          return Option(wikipageAbstract)
+        }
+
       }
       catch
       {
