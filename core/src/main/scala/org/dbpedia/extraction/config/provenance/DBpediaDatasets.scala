@@ -208,8 +208,10 @@ object DBpediaDatasets extends java.io.Serializable
     /**
      * Abstracts & Page text
      */
-    val ShortAbstracts: Dataset = datasets("short_abstracts")
-    val LongAbstracts: Dataset = datasets("long_abstracts")
+    val ShortPlainAbstracts: Dataset = datasets("short_plain_abstracts")
+    val LongPlainAbstracts: Dataset = datasets("long_plain_abstracts")
+    val ShortHtmlAbstracts: Dataset = datasets("short_html_abstracts")
+    val LongHtmlAbstracts: Dataset = datasets("long_html_abstracts")
     val MissingShortAbstracts: Dataset = datasets("missing_short_abstracts")
     val MissingLongAbstracts: Dataset = datasets("missing_long_abstracts")
     val NifContext: Dataset = datasets("nif_context")

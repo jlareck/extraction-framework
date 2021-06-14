@@ -47,7 +47,7 @@ class AbstractExtractorTest
         def language = Language.English
         def configFile : Config = new Config(configFilePath)
     }
-    private val extractor = new AbstractExtractor(context)
+    private val extractor = new PlainAbstractExtractor(context)
 
     private val parser = WikiParser.getInstance()
 

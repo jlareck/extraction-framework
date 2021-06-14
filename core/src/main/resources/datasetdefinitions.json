@@ -352,14 +352,26 @@
     }
   },
   "abstracts":{
-    "short_abstracts": {
-      "name": "Short Abstracts",
+    "short_html_abstracts": {
+      "name": "Short HTML Abstracts",
       "traits":"LinkedData, Published",
       "desc": "Short Abstracts (about 600 characters long) of Wikipedia articles.",
       "defaultgraph": "namespace"
     },
-    "long_abstracts": {
-      "name": "Long Abstracts",
+    "long_html_abstracts": {
+      "name": "Long HTML Abstracts",
+      "traits":"LinkedData, Published",
+      "desc": "Long abstracts (full abstracts) of Wikipedia articles, usually the first section.",
+      "defaultgraph": "namespace"
+    },
+    "short_plain_abstracts": {
+      "name": "Short Plain Abstracts",
+      "traits":"LinkedData, Published",
+      "desc": "Short Abstracts (about 600 characters long) of Wikipedia articles.",
+      "defaultgraph": "namespace"
+    },
+    "long_plain_abstracts": {
+      "name": "Long Plain Abstracts",
       "traits":"LinkedData, Published",
       "desc": "Long abstracts (full abstracts) of Wikipedia articles, usually the first section.",
       "defaultgraph": "namespace"

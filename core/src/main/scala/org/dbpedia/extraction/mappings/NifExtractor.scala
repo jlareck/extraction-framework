@@ -14,7 +14,7 @@ import scala.language.reflectiveCalls
 /**
   * Extracts page html.
   *
-  * Based on AbstractExtractor, major difference is the parameter
+  * Based on PlainAbstractExtractor, major difference is the parameter
   * apiParametersFormat = "action=parse&prop=text&section=0&format=xml&page=%s"
   *
   * This class produces all nif related datasets for the abstract as well as the short-, long-abstracts datasets.
@@ -44,7 +44,7 @@ class NifExtractor(
 
   protected val dbpediaVersion: String = context.configFile.dbPediaVersion
 
-  override val datasets = Set(DBpediaDatasets.NifContext,DBpediaDatasets.NifPageStructure,DBpediaDatasets.NifTextLinks,DBpediaDatasets.LongAbstracts, DBpediaDatasets.ShortAbstracts, DBpediaDatasets.RawTables, DBpediaDatasets.Equations)
+  override val datasets = Set(DBpediaDatasets.NifContext,DBpediaDatasets.NifPageStructure,DBpediaDatasets.NifTextLinks,DBpediaDatasets.LongHtmlAbstracts, DBpediaDatasets.ShortHtmlAbstracts, DBpediaDatasets.RawTables, DBpediaDatasets.Equations)
 
   private val mwConnector = new MediaWikiConnector(context.configFile.mediawikiConnection, context.configFile.nifParameters.nifTags.split(","))
 
@@ -69,7 +69,7 @@ class NifExtractor(
 
 object NifExtractor{
   //TODO check if this function is still relevant
-  //copied from AbstractExtractor
+  //copied from PlainAbstractExtractor
   def postProcessExtractedHtml(pageTitle: WikiTitle, text: String): String =
   {
     val startsWithLowercase =

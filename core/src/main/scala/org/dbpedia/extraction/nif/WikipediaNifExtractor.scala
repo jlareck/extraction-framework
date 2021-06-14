@@ -42,11 +42,12 @@ class WikipediaNifExtractor(
   protected lazy val longProperty: OntologyProperty = context.ontology.properties(context.configFile.abstractParameters.longAbstractsProperty)
 
   protected val dbpediaVersion: String = context.configFile.dbPediaVersion
-  protected lazy val longQuad: (String, String, String) => Quad = QuadBuilder(context.language, DBpediaDatasets.LongAbstracts, longProperty, null) _
-  protected lazy val shortQuad: (String, String, String) => Quad = QuadBuilder(context.language, DBpediaDatasets.ShortAbstracts, shortProperty, null) _
+  protected lazy val longQuad: (String, String, String) => Quad = QuadBuilder(context.language, DBpediaDatasets.LongHtmlAbstracts, longProperty, null) _
+  protected lazy val shortQuad: (String, String, String) => Quad = QuadBuilder(context.language, DBpediaDatasets.ShortHtmlAbstracts, shortProperty, null) _
   protected val recordAbstracts: Boolean = !context.configFile.nifParameters.isTestRun  //not! will create dbpedia short and long abstracts
   protected val shortAbstractLength: Int = context.configFile.abstractParameters.shortAbstractMinLength
   protected val abstractsOnly: Boolean = context.configFile.nifParameters.abstractsOnly
+  protected val removeBrokenBrackets: Boolean = context.configFile.nifParameters.removeBrokenBracketsProperty
   override protected val templateString: String = Namespaces.names(context.language).get(Namespace.Template.code) match {
     case Some(x) => x
     case None => "Template"
@@ -69,7 +70,11 @@ class WikipediaNifExtractor(
     //this is only dbpedia relevant: for singling out long and short abstracts
 
     if (recordAbstracts && extractionResults.section.id == "abstract" && extractionResults.getExtractedLength > 0) {
-      List(longQuad(subjectIri, WikiUtil.removeBrokenBracketsInAbstracts(extractionResults.getExtractedText), graphIri), shortQuad(subjectIri, WikiUtil.removeBrokenBracketsInAbstracts(getShortAbstract(extractionResults)), graphIri))
+      val modifiedText = removeBrokenBrackets match {
+        case true =>  WikiUtil.removeBrokenBracketsInAbstracts(extractionResults.getExtractedText)
+        case false => extractionResults.getExtractedText
+      }
+      List(longQuad(subjectIri, modifiedText, graphIri), shortQuad(subjectIri, modifiedText, graphIri))
     }
     else
       List()
